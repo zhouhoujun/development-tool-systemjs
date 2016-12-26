@@ -141,18 +141,11 @@ export class SystemjsBundle extends PipeTask {
 
         return Promise.resolve(jsbuilder)
             .then(builder => {
-                if (option.systemConfig) {
-                    if (_.isArray(option.systemConfig)) {
-                        return Promise.all(option.systemConfig.map(cf => builder.loadConfig(cf, undefined, true)))
-                            .then(() => {
-                                return builder;
-                            });
-                    } else {
-                        return builder.loadConfig(option.systemConfig, undefined, true)
-                            .then(() => {
-                                return builder;
-                            });
-                    }
+                if (_.isArray(option.systemConfig) && option.systemConfig.length > 1) {
+                    return Promise.all(option.systemConfig.map(cf => builder.loadConfig(cf, undefined, true)))
+                        .then(() => {
+                            return builder;
+                        });
                 } else {
                     return builder;
                 }
