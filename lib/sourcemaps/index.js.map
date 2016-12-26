@@ -1,0 +1,1 @@
+{"version":3,"sources":["index.ts"],"names":["__export","require"],"mappings":"8FACAA,SAAAC,QAAA,qBACAD,SAAAC,QAAA","file":"../index.js","sourcesContent":["export * from './config';\r\nexport * from './SystemjsBundle';\r\nexport * from './IndexBundle';\r\n"]}

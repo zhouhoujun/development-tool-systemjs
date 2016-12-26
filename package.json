@@ -1,0 +1,68 @@
+{
+  "name": "development-tool-systemjs",
+  "version": "0.2.10",
+  "description": "jspm bundle builder tools, group bundle.",
+  "main": "./lib/index.js",
+  "typings": "./lib/index",
+  "scripts": {
+    "gulp": "gulp",
+    "postinstall": "npm prune",
+    "reinstall": "npm cache clean && npm install",
+    "test": "gulp build --test",
+    "prepublish": "gulp build --release",
+    "e2e": "protractor",
+    "e2e.live": "protractor --elementExplorer"
+  },
+  "keywords": [
+    "development",
+    "development-tool",
+    "gulp",
+    "jspm",
+    "incremental",
+    "group",
+    "bundle"
+  ],
+  "author": "houjun",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zhouhoujun/development-tool-systemjs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhouhoujun/development-tool-systemjs.git"
+  },
+  "dependencies": {
+    "@types/chalk": "^0.4.31",
+    "@types/gulp": "^3.8.32",
+    "@types/gulp-html-replace": "^1.5.29",
+    "@types/lodash": "^4.14.37",
+    "@types/mocha": "^2.2.33",
+    "chalk": "^1.1.3",
+    "checksum": "^0.1.1",
+    "development-core": "^0.10.1",
+    "gulp": "^3.9.1",
+    "gulp-html-replace": "^1.6.1",
+    "gulp-replace": "^0.5.4",
+    "gulp-uglify": "^1.5.4",
+    "systemjs": "^0.19.41",
+    "systemjs-builder": "^0.15.34",
+    "lodash": "^4.13.1",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-paths": "^2.1.0",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "devDependencies": {
+    "bluebird": "^3.4.1",
+    "development-assert-ts": "^0.6.1",
+    "development-tool": "^0.10.1",
+    "development-tool-node": "^0.6.3",
+    "gulp-ng-annotate": "^2.0.0",
+    "through2": "^2.0.1",
+    "ts-node": "^1.6.0",
+    "tslint": "^3.15.1",
+    "tslint-stylish": "^2.1.0-beta",
+    "typescript": "^2.1.4",
+    "zone.js": "^0.7.4"
+  },
+  "homepage": "https://github.com/zhouhoujun/development-tool-systemjs#readme"
+}
