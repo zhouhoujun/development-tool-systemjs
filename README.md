@@ -157,7 +157,7 @@ Development.create(gulp, __dirname, [
                 bundleBaseDir: 'dist/production',
                 src: 'dist/production/**/*.js',
                 dist: 'dist/production',
-                jspmConfig: 'dist/production/jspm-config/config.js',
+                systemConfig: 'dist/production/jspm-config/config.js',
                 mainfile: 'bundle.js',
                 loader: 'development-tool-systemjs',
                 bundles: (ctx) => {
