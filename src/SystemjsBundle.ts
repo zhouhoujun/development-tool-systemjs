@@ -22,7 +22,7 @@ const mkdirp = require('mkdirp');
 })
 export class SystemjsBundle extends PipeTask {
 
-    name = 'jspm-bundle';
+    name = 'systemjs-bundle';
     runWay = RunWay.sequence;
     private bundleMaps: IBundleMap[];
     constructor(info?: ITaskInfo) {
@@ -137,7 +137,7 @@ export class SystemjsBundle extends PipeTask {
 
     protected loadBuilder(ctx: ITaskContext): Promise<any> {
         let option = <IBundlesConfig>ctx.option;
-        let jsbuilder = new Builder(ctx.getRootPath(), _.isArray(option.systemConfig) ? _.first(option.systemConfig) : <string>option.systemConfig);
+        let jsbuilder = new Builder(_.isArray(option.systemConfig) ? _.first(option.systemConfig) : <string>option.systemConfig);
 
         return Promise.resolve(jsbuilder)
             .then(builder => {
@@ -278,8 +278,8 @@ export class SystemjsBundle extends PipeTask {
                 return paths;
             },
             includePackageFiles: [
-                'system-polyfills.src.js',
-                'system.src.js'
+                'node_modules/systemjs/dist/system-polyfills.src.js',
+                'node_modules/systemjs/dist/system.src.js'
             ],
             jspmMates: {
                 '*.css': {
@@ -313,6 +313,11 @@ export class SystemjsBundle extends PipeTask {
             console.log(chalk.red('bundleBaseURL config error!'));
             process.exit(0);
         }
+
+        option.includes = option.includes || [];
+        (option.includePackageFiles || []).forEach(f => {
+            option.includes.push(ctx.toRootPath(f));
+        });
 
         if (option.systemConfig) {
             option.systemConfig = ctx.toRootSrc(ctx.toSrc(option.systemConfig));
@@ -454,7 +459,16 @@ export class SystemjsBundle extends PipeTask {
         let shortPath = this.getBundleShortPath(config, bundleName, bundleGp);
         let filename = path.parse(bundleDest).base;
 
-        return bundler.bind(builder)(bundleStr, bundleDest, builderCfg)
+
+        let opts: any = _.extend({ outFile: bundleDest }, builderCfg || {});
+        if (!('normalize' in opts)) {
+            opts.normalize = true;
+        }
+        if (!('lowResSourceMaps' in opts)) {
+            opts.lowResSourceMaps = true;
+        }
+
+        return bundler.bind(builder)(bundleStr, bundleDest, opts)
             .then(output => {
                 mkdirp.sync(path.dirname(bundleDest));
                 var stream: ITransform = source(filename);
@@ -462,7 +476,8 @@ export class SystemjsBundle extends PipeTask {
                 process.nextTick(function () {
                     stream.end();
                 });
-
+                console.log('pipe bundling：', chalk.cyan(output.source));
+                console.log('pipe bundling：', chalk.cyan(output.modules));
                 console.log('pipe bundling：', chalk.cyan(bundleName));
                 return {
                     stream: stream.pipe(vinylBuffer()),
