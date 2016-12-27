@@ -137,7 +137,8 @@ export class SystemjsBundle extends PipeTask {
 
     protected loadBuilder(ctx: ITaskContext): Promise<any> {
         let option = <IBundlesConfig>ctx.option;
-        let jsbuilder = new Builder(_.isArray(option.systemConfig) ? _.first(option.systemConfig) : <string>option.systemConfig);
+        let baseURL = ctx.toUrl(ctx.getRootPath(), <string>option.baseURL) || '';
+        let jsbuilder = new Builder(baseURL, _.isArray(option.systemConfig) ? _.first(option.systemConfig) : <string>option.systemConfig);
 
         return Promise.resolve(jsbuilder)
             .then(builder => {
