@@ -1,6 +1,6 @@
 {
   "name": "development-tool-systemjs",
-  "version": "0.2.11",
+  "version": "0.1.1",
   "description": "jspm bundle builder tools, group bundle.",
   "main": "./lib/index.js",
   "typings": "./lib/index",
@@ -17,7 +17,7 @@
     "development",
     "development-tool",
     "gulp",
-    "jspm",
+    "systemjs",
     "incremental",
     "group",
     "bundle"
