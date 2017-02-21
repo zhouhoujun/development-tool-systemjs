@@ -477,8 +477,8 @@ export class SystemjsBundle extends PipeTask {
                 process.nextTick(function () {
                     stream.end();
                 });
-                console.log('pipe bundling：', chalk.cyan(output.source));
-                console.log('pipe bundling：', chalk.cyan(output.modules));
+                // console.log('pipe bundling：', chalk.cyan(output.source));
+                // console.log('pipe bundling：', chalk.cyan(output.modules));
                 console.log('pipe bundling：', chalk.cyan(bundleName));
                 return {
                     stream: stream.pipe(vinylBuffer()),
