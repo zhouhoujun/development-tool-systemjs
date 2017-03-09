@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import { IMap, task, RunWay, IAssertDist, ITaskContext, Src, Pipe, OutputPipe, ITaskInfo, TransformSource, ITransform, Operation, PipeTask, bindingConfig } from 'development-core';
 import { Gulp } from 'gulp';
 import * as path from 'path';
+import * as url from 'url';
 import { IBundlesConfig, IBundleGroup, IBuidlerConfig, IBundleMap, IBundleTransform } from './config';
 
 import { readFileSync, readFile, existsSync, writeFileSync } from 'fs';
@@ -249,7 +250,7 @@ export class SystemjsBundle extends PipeTask {
     }
 
     private initOption(ctx: ITaskContext) {
-        let option = <IBundlesConfig>_.extend(<IBundlesConfig>{
+        let option = <IBundlesConfig>_.extend({}, <IBundlesConfig>{
             baseURL: '',
             bundleBaseDir: '.',
             mainfile: 'bundle.js',
@@ -305,7 +306,7 @@ export class SystemjsBundle extends PipeTask {
 
         ctx.option = option;
 
-        option.baseURL = ctx.toRootPath(ctx.toStr(option.baseURL));
+        option.baseURL = ctx.toStr(option.baseURL);
         if (!option.bundleBaseDir && ctx.parent) {
             option.bundleBaseDir = ctx.parent.getDist()
         } else if (option.bundleBaseDir) {
@@ -369,14 +370,14 @@ export class SystemjsBundle extends PipeTask {
                 let baseURL = <string>option.baseURL; // ctx.toUrl(ctx.getRootPath(), <string>option.baseURL) || '.';
                 let root = ctx.getRootPath();
                 _.each(folders, f => {
-                    let relp = ctx.toUrl(root, path.join(baseURL, ctx.toUrl(dist, f)));
+                    let relp = url.resolve(baseURL,  ctx.toUrl(root, ctx.toUrl(dist, f)));
                     let fm = path.basename(f);
                     console.log('reset css url folder name:', chalk.cyan(fm), 'relate url:', chalk.cyan(relp));
-                    let reg = new RegExp(`(url\\((..\\/)+${fm})|(url\\(\\/${fm})`, 'gi');
+                    let reg = new RegExp(`(url\\((\\.\\.\\/)+${fm})|(url\\(\\/${fm})`, 'gi');
                     ps.push(() => replace(reg, `url(${relp}`));
-                    let reg2 = new RegExp(`(url\\(\\'(..\\/)+${fm})|(url\\(\\'\\/${fm})`, 'gi');
+                    let reg2 = new RegExp(`(url\\(\\\\'(\\.\\.\\/)+${fm})|(url\\(\\\\'\\/${fm})`, 'gi');
                     ps.push(() => replace(reg2, `url(\\'${relp}`));
-                    let reg3 = new RegExp(`(url\\(("..\\/)+${fm})|(url\\("\\/${fm})`, 'gi');
+                    let reg3 = new RegExp(`(url\\(("\\.\\.\\/)+${fm})|(url\\("\\/${fm})`, 'gi');
                     ps.push(() => replace(reg3, `url("${relp}`));
                 });
                 this.restps = ps;
