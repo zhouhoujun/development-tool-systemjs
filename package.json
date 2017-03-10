@@ -53,7 +53,7 @@
     "devDependencies": {
         "bluebird": "^3.4.1",
         "development-assert-ts": "^0.6.1",
-        "development-tool": "^0.10.3",
+        "development-tool": "^0.10.4",
         "development-tool-node": "^0.6.4",
         "gulp-ng-annotate": "^2.0.0",
         "through2": "^2.0.1",
