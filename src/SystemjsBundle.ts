@@ -306,7 +306,7 @@ export class SystemjsBundle extends PipeTask {
 
         ctx.option = option;
 
-        option.baseURL = ctx.toStr(option.baseURL);
+        option.baseURL = ctx.toStr(option.baseURL) || './';
         if (!option.bundleBaseDir && ctx.parent) {
             option.bundleBaseDir = ctx.parent.getDist()
         } else if (option.bundleBaseDir) {
