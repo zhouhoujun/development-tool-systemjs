@@ -27,14 +27,6 @@ export class IndexBundle extends PipeTask {
         return gulp.src(ctx.toRootSrc(src));
     }
 
-    // private packages = {};
-    // public getPackage(option: IBundlesConfig): any {
-    //     if (!this.packages[<string>option.packageFile]) {
-    //         this.packages[<string>option.packageFile] = require(<string>option.packageFile);
-    //     }
-    //     return this.packages[<string>option.packageFile]
-    // }
-
     pipes(ctx: ITaskContext, dist: IAssertDist, gulp?: Gulp): Pipe[] {
         let option = <IBundlesConfig>ctx.option;
         let pkg = ctx.getPackage()
