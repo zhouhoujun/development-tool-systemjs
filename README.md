@@ -294,8 +294,6 @@ Development.create(gulp, __dirname, [
                         { name: 'core', pattern: 'app/core/**/!(routing).module.js' },
                         { name: 'shared', pattern: 'app/shared/**/!(routing).module.js' },
                         { name: 'dashboard', pattern: 'app/dashboard/**/!(routing).module.js' },
-                        { name: 'configure', pattern: 'app/configure/**/!(routing).module.js' },
-                        { name: 'monitor', pattern: 'app/monitor/**/!(routing).module.js' },
                         { name: 'app', items: ['app/app.module.js', 'app/boot.js'] }
                     ];
                     let dist = ctx.parent.getDist();
