@@ -1,7 +1,7 @@
 {
     "name": "development-tool-systemjs",
     "version": "0.1.7",
-    "description": "jspm bundle builder tools, group bundle.",
+    "description": "jspm bundle builder tools, group bundle. also work with angular1 or angular2",
     "main": "./lib/index.js",
     "typings": "./lib/index",
     "scripts": {
@@ -18,6 +18,7 @@
         "development-tool",
         "gulp",
         "systemjs",
+        "angular2",
         "incremental",
         "group",
         "bundle"
