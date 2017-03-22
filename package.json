@@ -1,6 +1,6 @@
 {
     "name": "development-tool-systemjs",
-    "version": "0.1.7",
+    "version": "1.0.0",
     "description": "jspm bundle builder tools, group bundle. also work with angular1 or angular2",
     "main": "./lib/index.js",
     "typings": "./lib/index",
@@ -40,7 +40,7 @@
         "@types/mocha": "^2.2.33",
         "chalk": "^1.1.3",
         "checksum": "^0.1.1",
-        "development-core": "^0.10.4",
+        "development-core": "^1.*",
         "gulp": "^3.9.1",
         "gulp-html-replace": "^1.6.1",
         "gulp-replace": "^0.5.4",
@@ -53,16 +53,16 @@
     },
     "devDependencies": {
         "bluebird": "^3.4.1",
-        "development-assert-ts": "^0.6.1",
-        "development-tool": "^0.10.4",
-        "development-tool-node": "^0.6.4",
+        "development-assert-ts": "^1.*",
+        "development-tool": "^1.*",
+        "development-tool-node": "^1.*",
         "gulp-ng-annotate": "^2.0.0",
         "through2": "^2.0.1",
-        "ts-node": "^2.1.0",
-        "tslint": "^4.4.2",
-        "tslint-stylish": "^2.1.0",
-        "typescript": "^2.1.4",
-        "zone.js": "^0.7.4"
+        "ts-node": "^3.*",
+        "tslint": "*",
+        "tslint-stylish": "*",
+        "typescript": "^2.*",
+        "zone.js": "*"
     },
     "homepage": "https://github.com/zhouhoujun/development-tool-systemjs#readme"
 }
