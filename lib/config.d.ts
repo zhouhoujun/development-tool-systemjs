@@ -50,8 +50,11 @@ export interface IBundlesConfig extends IAsserts {
      */
     dependencies?: string[] | ((ctx: ITaskContext) => string[]);
     /**
+     * babel Options for fix bug after systemjs builder. if is set null, will execute bable compile.
+     */
+    babelOptions?: any | ((ctx: ITaskContext) => any);
+    /**
      * bundlePaths
-     *
      *
      * @memberOf IBundlesConfig
      */

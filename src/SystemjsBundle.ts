@@ -15,6 +15,7 @@ const source = require('vinyl-source-stream');
 const vinylBuffer = require('vinyl-buffer');
 const chksum = require('checksum');
 const mkdirp = require('mkdirp');
+const babel = require('gulp-babel');
 // const uglify = require('gulp-uglify');
 
 
@@ -105,7 +106,12 @@ export class SystemjsBundle extends PipeTask {
     }
 
     pipes(ctx: ITaskContext, dist: IAssertDist, gulp?: Gulp): Pipe[] {
-        let pipes = super.pipes(ctx, dist, gulp) || [];
+        let pipes = [];
+        let option = ctx.option as IBundlesConfig;
+        if (option.babelOptions) {
+            pipes.push(() => babel(option.babelOptions))
+        }
+        pipes = pipes.concat(super.pipes(ctx, dist, gulp) || []);
         let ps = this.getAssertResetPipe(ctx);
         if (ps && ps.length > 0) {
             pipes = pipes.concat(ps);
@@ -294,6 +300,10 @@ export class SystemjsBundle extends PipeTask {
                     loader: 'jsx'
                 }
             },
+            babelOptions: {
+                'presets': ['es2015', 'stage-0', 'react'],
+                'plugins': ['transform-es2015-modules-systemjs', 'transform-flow-strip-types']
+            },
             builder: {
                 sfx: false,
                 minify: false,
@@ -370,7 +380,7 @@ export class SystemjsBundle extends PipeTask {
                 let baseURL = <string>option.baseURL; // ctx.toUrl(ctx.getRootPath(), <string>option.baseURL) || '.';
                 let root = ctx.getRootPath();
                 _.each(folders, f => {
-                    let relp = url.resolve(baseURL,  ctx.toUrl(root, ctx.toUrl(dist, f)));
+                    let relp = url.resolve(baseURL, ctx.toUrl(root, ctx.toUrl(dist, f)));
                     let fm = path.basename(f);
                     console.log('reset css url folder name:', chalk.cyan(fm), 'relate url:', chalk.cyan(relp));
                     let reg = new RegExp(`(url\\((\\.\\.\\/)+${fm})|(url\\(\\/${fm})`, 'gi');
@@ -457,7 +467,7 @@ export class SystemjsBundle extends PipeTask {
     private createBundler(config: ITaskContext, builder: any, bundleName: string, bundleStr: string, bundleDest: string, builderCfg: IBuidlerConfig, bundleGp?: IBundleGroup): Promise<IBundleTransform> {
 
         let sfx = builderCfg.sfx;
-        let bundler = (sfx) ? builder.buildStatic : builder.bundle;
+        let bundler = (sfx === true) ? builder.buildStatic : builder.bundle;
         let shortPath = this.getBundleShortPath(config, bundleName, bundleGp);
         let filename = path.parse(bundleDest).base;
 

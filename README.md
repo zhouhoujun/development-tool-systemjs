@@ -354,17 +354,16 @@ Development.create(gulp, __dirname, [
                             exclude: ['libs', 'angularlibs']
                         }
                     };
-                }
+                },
+                pipes: [
+                    // or custom bable compile.
+                    // () => babel({
+                    //     'presets': ['es2015', 'stage-0'], // , 'react'],
+                    //     'plugins': ['transform-es2015-modules-systemjs', 'transform-flow-strip-types']
+                    // }),
+                    () => uglify()
+                ]
                 // , mainfilePipes: [
-                //     // () => babel({
-                //     //     presets: ['es2015']
-                //     // }),
-                //     () => uglify()
-                // ],
-                // pipes: [
-                //     // () => babel({
-                //     //     presets: ['es2015']
-                //     // }),
                 //     () => uglify()
                 // ]
             },
