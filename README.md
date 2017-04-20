@@ -28,13 +28,12 @@ test, zip bundle, and publish docker service.
 ```ts
 import * as gulp from 'gulp';
 import * as _ from 'lodash';
-import { Pipe, Operation, IMap, IDynamicTaskOption, RunWay } from 'development-core';
+import { Pipe, Operation, IMap, IDynamicTaskOption } from 'development-core';
 import { Development, ITaskOption } from 'development-tool';
 import { IBundlesConfig, IBundleGroup } from 'development-tool-systemjs';
 import { IWebTaskOption } from 'development-tool-web';
-// import { ITsTaskOption } from 'development-assert-ts';
 import * as path from 'path';
-import { exec } from 'child_process';
+
 const tslint = require('gulp-tslint');
 const cache = require('gulp-cached');
 const rename = require('gulp-rename');
@@ -42,9 +41,11 @@ const jeditor = require('gulp-json-editor');
 const through = require('through2');
 const JSONC = require('json-comments');
 const replace = require('gulp-replace');
+// const babel = require('gulp-babel');
 const del = require('del');
 const htmlMin = require('gulp-minify-html');
-
+const uglify = require('gulp-uglify');
+// const inlineNg2Template = require('gulp-inline-ng2-template');
 const sass = require('gulp-sass');
 
 interface Packages {
@@ -114,32 +115,31 @@ Development.create(gulp, __dirname, [
             }
         },
         browsersync: {
-            // serverBaseDir: ctx => [ctx.env.root, ctx.getDist()],
             files: ['node_modules/**/*']
         },
         karma: {
-            // karmaBasePath: '', // ctx.getRootPath(), // 'dist/development',
             jspm: {
-                systemjs: ['systemjs/dist/system-polyfills.src', 'systemjs/dist/system.src'],
+                systemjs: ['systemjs/dist/system-polyfills', 'systemjs/dist/system'],
                 config: ['systemjs.config.js'],
                 resource: 'assets'
             }
         },
         loader: 'development-tool-web',
         assertsOrder: total => 1 / total,
-        // assertsRunWay: RunWay.sequence,
-        // name: 'web',
         asserts: {
             css: '', // less: '',
             jpeg: Operation.default, jpg: Operation.default, png: Operation.default, svg: Operation.default,
             ttf: Operation.default, woff: Operation.default, eot: Operation.default, xlsx: Operation.default,
             pdf: Operation.default,
+            bootstrapfonts: {
+                src: 'node_modules/bootstrap-sass/assets/fonts/**',
+                dist: ctx => ctx.parent.toDistPath('./fonts')
+            },
             scss: {
                 src: 'client/**/*.scss',
                 loader: [{
                     oper: Operation.default | Operation.autoWatch,
                     pipes: [
-                        () => cache('sass_files'),
                         (ctx) => sass({
                             outputStyle: 'compressed',
                             includePaths: [
@@ -185,7 +185,6 @@ Development.create(gulp, __dirname, [
                 },
                 loader: [
                     {
-                        // name: 'config',
                         oper: Operation.default | Operation.autoWatch,
                         pipes: [
                             () => cache('config_json'),
@@ -232,7 +231,6 @@ Development.create(gulp, __dirname, [
                 loader: {
                     module: 'development-assert-ts',
                     pipes: <Pipe[]>[
-                        // { toTransform: () => inlineNg2Template({ base: '/app' }), order: total => 1 / total },
                         { toTransform: () => tslint(), order: total => 2 / total }
                     ]
                 }
@@ -240,18 +238,7 @@ Development.create(gulp, __dirname, [
             tsx: {
                 loader: 'development-assert-ts'
             },
-            jspmconfig: {
-                src: 'client/jspm-config/*.js',
-                dist: 'dist/development/jspm-config',
-                releaseDist: 'dist/production/jspm-config',
-                oper: Operation.default | Operation.autoWatch,
-                loader: [
-                    {
-                        pipes: <Pipe[]>[]
-                    }
-                ]
-            },
-            js: ['client/**/*.js', '!client/jspm-config/*.js']
+            js: 'client/**/*.js'
         },
         subTaskOrder: total => 3 / total,
         tasks: [
@@ -322,12 +309,15 @@ Development.create(gulp, __dirname, [
                         return bundle;
                     });
                 },
-                depsExclude: ['angular-i18n', 'jquery', 'rxjs', 'app', 'ag-grid', '@angularclass'],
+                depsExclude: ['angular-i18n', 'jquery', 'rxjs', 'app', 'ag-grid', '@angularclass', 'plugin-babel', 'systemjs-babel-build', 'ts', 'typescript'],
                 bundleDeps: (ctx, deps) => {
-                    let libs = ['css', 'json', 'lodash', 'text', 'zone.js', 'reflect-metadata', 'moment', 'core-js-shim']; // ,  'bootstrap', 'normalize.css', 'spectrum', 'html2canvas', 'moment', 'highcharts'];
+                    let libs = ['css', 'json', 'lodash', 'text', 'zone.js', 'reflect-metadata', 'moment', 'core-js-shim', 'url'];
                     let angularlibs = _.filter(deps, it => {
                         return it.indexOf('@angular') === 0 && it.indexOf('@angularclass') < 0;
                     });
+
+                    let ngtools = ['angular2-grid', 'highcharts', 'angular2-highcharts', 'ng2-validation', 'ng2-file-upload', 'ng2-translate', 'ng2-bootstrap'];
+
                     return {
                         libs: {
                             combine: true,
@@ -341,23 +331,23 @@ Development.create(gulp, __dirname, [
                         tools: {
                             combine: true,
                             items: _.filter(deps, function (d) {
-                                return d.indexOf('skspruce') < 0 && libs.indexOf(d) < 0 && angularlibs.indexOf(d) < 0;
+                                return skslibs.indexOf(d) < 0 && libs.indexOf(d) < 0 && angularlibs.indexOf(d) < 0 && ngtools.indexOf(d) < 0;
                             }),
                             exclude: ['libs', 'angularlibs']
+                        },
+                        ngtools: {
+                            combine: true,
+                            items: ngtools,
+                            exclude: ['libs', 'angularlibs', 'tools']
                         }
                     };
                 },
                 pipes: [
-                    // or custom bable compile.
-                    // () => babel({
-                    //     'presets': ['es2015', 'stage-0'], // , 'react'],
-                    //     'plugins': ['transform-es2015-modules-systemjs', 'transform-flow-strip-types']
-                    // }),
                     () => uglify()
                 ]
-                // , mainfilePipes: [
-                //     () => uglify()
-                // ]
+                , mainfilePipes: [
+                    () => uglify()
+                ]
             },
             {
                 loader: <IDynamicTaskOption[]>[
@@ -379,246 +369,30 @@ Development.create(gulp, __dirname, [
     },
     <ITaskOption>{
         name: 'docker',
+        oper: Operation.deploy,
         tasks: [
             {
                 src: 'dist/**',
                 loader: [
                     {
                         name: 'clean-development',
-                        oper: Operation.deploy,
                         task: (ctx) => del('dist/development')
-                    },
-                    {
-                        name: 'deploy-server',
-                        oper: Operation.deploy,
-                        task: (ctx) => new Promise((resolve, reject) => {
-                            let cmds = '';
-                            let dist = ctx.toUrl(ctx.getRootPath());
-                            if (/^[C-Z]:/.test(dist)) {
-                                cmds = _.first(dist.split(':')) + ': & ';
-                            }
-                            cmds = cmds + dist + ' & docker-compose build';
-                            console.log(cmds);
-                            let child = exec(cmds, (err, stdout, stderr) => {
-                                if (err) {
-                                    reject(err);
-                                } else {
-                                    resolve();
-                                }
-                            });
-
-                            child.stdout.on('data', data => {
-                                console.log(data);
-                            });
-
-                            child.stderr.on('data', data => {
-                                console.log(data);
-                            });
-                        })
-                    }]
-            }
-        ]
-    }
-]);
-
-
-```
-
-## group bundles， demo for angular 1 .
-
-```ts
-
-import * as gulp from 'gulp';
-import * as _ from 'lodash';
-import { Pipe, IPipe, Operation, IMap, IDynamicTaskOption, RunWay } from 'development-core';
-import { Development, IContext } from 'development-tool';
-import { IBundlesConfig, IBundleGroup } from 'development-tool-systemjs';
-import { IWebTaskOption } from 'development-tool-web';
-import { ITsTaskOption } from 'development-assert-ts';
-import * as path from 'path';
-const tslint = require('gulp-tslint');
-const ngAnnotate = require('gulp-ng-annotate');
-const cache = require('gulp-cached');
-const rename = require('gulp-rename');
-const jeditor = require('gulp-json-editor');
-const through = require('through2');
-const JSONC = require('json-comments');
-const replace = require('gulp-replace');
-const del = require('del');
-const uglify = require('gulp-uglify');
-
-Development.create(gulp, __dirname, [
-    <IWebTaskOption>{
-        src: 'src',
-        dist: 'dist/development',
-        releaseDist: 'dist/production',
-        cleanSrc: (ctx) => {
-            if (ctx.env.release || ctx.env.deploy) {
-                if (ctx.env.gb) {
-                    return ['dist/production/!(*.js)'];
-                } else {
-                    return 'dist/production';
-                }
-            } else {
-                return 'dist/development';
-            }
-        },
-        karma: {
-            jspm: {
-                resource: 'assets'
-            }
-        },
-        loader: 'development-tool-web',
-        assertsOrder: total => 1 / total,
-        asserts: {
-            css: '', less: '',
-            jpeg: Operation.default, jpg: Operation.default, png: Operation.default, svg: Operation.default,
-            ttf: Operation.default, woff: Operation.default, eot: Operation.default, xslx: Operation.default,
-            pdf: Operation.default,
-            html: 'src/*.html',
-            json:['src/**/*.json', '!src/data/**/*.json', '!src**/jsconfig.json', '!src/config*.json'],
-            config: {
-                src(ctx) {
-                    if (ctx.env.config) {
-                        return `src/config-${ctx.env.config}.json`;
-                    } else {
-                        return 'src/config.json';
                     }
-                },
-                loader: []
-            },
-            template: {
-                src: 'src/**/*.tpl.html',
-                loader: 'development-assert-templ'
-            },
-            ts: {
-                src: ['src/**/*.ts', 'test/**/*.ts'],
-                uglify: false,
-                loader: {
-                    module: 'development-assert-ts',
-                    pipes: <Pipe[]>[
-                        { name: 'tscompile', toTransform: () => ngAnnotate(), order: total => 1 / total },
-                    ]
-                }
-            },
-            jspmconfig: {
-                src: 'src/jspm-config/*.js',
-                dist: 'dist/development/jspm-config',
-                releaseDist: 'dist/production/jspm-config',
-                watch: true,
-                loader: [
-                    {
-                        pipes: <Pipe[]>[
-                            // {
-                            //     oper: Operation.build,
-                            //     toTransform: () => replace(/dist\/jspm_packages/g, 'dist/jspm_packages')
-                            // }
-                        ]
-                    }
-                ]
-            },
-            js: ['src/**/*.js', '!src/jspm-config/**/*.js']
-        },
-        subTaskOrder: total => 3 / total,
-        tasks: [
-            <IBundlesConfig>{
-                index: ['src/index.html', 'src/Index.cshtml'],
-                bundleBaseDir: 'dist/production',
-                src: 'dist/production/**/*.js',
-                dist: 'dist/production',
-                systemConfig: 'dist/production/jspm-config/config.js',
-                mainfile: 'bundle.js',
-                loader: 'development-tool-systemjs',
-                bundles: (ctx) => {
-                    let routes = [
-                        'app/subapp1/routes.json',
-                        'app/subapp2/routes.json',
-                        'app/subapp3.json'
-                    ];
-                    let dist = ctx.parent.getDist();
-                    return ctx.fileFilter(path.join(dist, 'common/**/*.js'), null, n => {
-                        return ctx.toUrl(dist, n); // path.relative(dist, n).replace(/\\/g, '/').replace(/^\//g, '');
-                    }).then(cits => {
-                        let bundle: IMap<IBundleGroup> = {
-                            commons: {
-                                combine: true,
-                                exclude: [],
-                                items: cits
-                            }
-                        };
-                        _.each(routes, (r, idx) => {
-                            let rf = path.join(dist, r);
-                            let route: any[] = require(rf);
-                            if (route) {
-                                let rs = r.split('/');
-                                let name = rs[(rs.length - 2)];
-                                let items = _.uniq(_.map(route, r => {
-                                    return r.src;
-                                }));
-                                let exclude = [];
-                                if (idx === (routes.length - 1)) {
-                                    exclude = _.keys(bundle);
-                                    items.push('app/app');
-                                }
-
-                                bundle[name] = {
-                                    combine: true,
-                                    items: items,
-                                    exclude: exclude
-                                }
-                            }
-                        });
-                        return bundle;
-                    });
-                },
-                depsExclude: ['angular-i18n', 'jquery'],
-                bundleDeps: (ctx, deps) => {
-                    let libs = ['bootstrap', 'bootstrap-less', 'css', 'less', 'json', 'lodash', 'text', 'url', 'normalize.css', 'spectrum', 'html2canvas', 'moment', 'highcharts'];
-                    let cores = ['angular', 'oclazyload', 'angular-translate', 'angular-translate-loader-static-files', 'angular-messages'
-                        , 'angular-ui-event', 'angular-ui-utils', 'angular-ui-validate', 'angular-ui-router', 'angular-loading-bar'
-                        , 'ng-file-upload', 'angular-ui-bootstrap', 'ui-router-extras'];
-                    return {
-                        libs: {
-                            combine: true,
-                            items: libs
-                        },
-                        core: {
-                            combine: true,
-                            items: cores,
-                            exclude: ['libs']
-                        },
-                        tools: {
-                            combine: true,
-                            items: _.filter(deps, function (d) {
-                                return libs.indexOf(d) < 0 && cores.indexOf(d) < 0;
-                            }),
-                            exclude: ['libs', 'core']
-                        },
-                        components: {
-                            combine: true,
-                            items: _.filter(deps, function (d) {
-                                return libs.indexOf(d) < 0 && cores.indexOf(d) < 0;
-                            }),
-                            exclude: ['libs', 'core', 'tools']
-                        }
-                    };
-                },
-                pipes: [
-                    () => ngAnnotate(),
-                    () => uglify()
                 ]
             },
             {
-                loader: <IDynamicTaskOption>{
-                    name: 'clean-production',
-                    oper: Operation.release,
-                    task: (ctx) => del(ctx.toDistSrc(['app', 'common', 'data']))
-                }
-            }
-        ]
+                name: 'deploy-server',
+                src: 'docker-compose.yml',
+                dist: './publish',
+                exportImage: true,
+                images: ['test_webapp', 'test_nginx'],
+                service: 'www.yourserver.com',
+                user: 'test',
+                psw: 'test',
+                loader: 'development-tool-docker'
+            }]
     }
 ]);
-
 
 ```
 
