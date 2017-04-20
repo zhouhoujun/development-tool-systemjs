@@ -77,14 +77,6 @@ Development.create(gulp, __dirname, [
                     pipes: [(ctx) => replace('"script": "dist/index.js",', '"script": "index.js",')]
                 }]
 
-            },
-            docker: {
-                src: 'docker-compose.yml',
-                oper: Operation.deploy,
-                loader: [{
-                    pipes: [(ctx) => replace(/build:/gi, '# build:')]
-                }]
-
             }
         },
         tasks: [
