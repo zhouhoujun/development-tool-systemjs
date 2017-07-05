@@ -301,7 +301,7 @@ export class SystemjsBundle extends PipeTask {
                 }
             },
             babelOptions: {
-                'presets': ['es2015', 'stage-0', 'react'],
+                'presets': ['es2015', 'stage-0'],
                 'plugins': ['transform-es2015-modules-systemjs', 'transform-flow-strip-types']
             },
             builder: {
