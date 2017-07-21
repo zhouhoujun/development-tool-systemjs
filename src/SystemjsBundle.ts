@@ -59,8 +59,8 @@ export class SystemjsBundle extends PipeTask {
                     console.log('start bundle all src : ', chalk.cyan(<any>src));
                     let bcfg = this.getBuildConfig(ctx);
                     if (bcfg.config) {
-                        builder.loadConfig(bcfg.config, undefined, true)
-                        // builder.config(bcfg.config)
+                        // builder.loadConfig(bcfg.config, undefined, true)
+                        builder.config(bcfg.config)
                     }
 
                     return ctx.fileFilter(src)

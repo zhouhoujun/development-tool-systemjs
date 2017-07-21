@@ -1,1 +1,1 @@
-{"version":3,"sources":["index.ts"],"names":[],"mappings":";;;;;AACA,sCAAiC;AACjC,mCAA8B","file":"../index.js","sourcesContent":["export * from './config';\r\nexport * from './SystemjsBundle';\r\nexport * from './IndexBundle';\r\n"]}
+{"version":3,"sources":["index.ts"],"names":[],"mappings":";;;;AACA,sCAAiC;AACjC,mCAA8B","file":"../index.js","sourcesContent":["export * from './config';\r\nexport * from './SystemjsBundle';\r\nexport * from './IndexBundle';\r\n"]}

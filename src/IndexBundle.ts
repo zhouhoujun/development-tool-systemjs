@@ -30,7 +30,7 @@ export class IndexBundle extends PipeTask {
 
     pipes(ctx: ITaskContext, dist: IAssertDist, gulp?: Gulp): Pipe[] {
         let option = <IBundlesConfig>ctx.option;
-        console.log('index option:', option);
+        // console.log('index option:', option);
         let pkg = ctx.getPackage()
         let pipes = <Pipe[]>[
             (ctx: ITaskContext) => htmlreplace({ 'js': ctx.toUrl(path.join(ctx.toStr(option.baseURL) || './', ctx.toStr(option.mainfile))) + '?bust=' + (ctx.toStr(option.bust) || pkg.version) })
