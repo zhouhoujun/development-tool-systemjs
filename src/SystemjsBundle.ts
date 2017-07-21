@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import { IMap, task, RunWay, IAssertDist, ITaskContext, Src, Pipe, OutputPipe, ITaskInfo, TransformSource, ITransform, Operation, PipeTask, bindingConfig } from 'development-core';
 import { Gulp } from 'gulp';
 import * as path from 'path';
-import * as url from 'url';
+// import * as url from 'url';
 import { IBundlesConfig, IBundleGroup, IBuidlerConfig, IBundleMap, IBundleTransform } from './config';
 
 import { readFileSync, readFile, existsSync, writeFileSync } from 'fs';
@@ -382,7 +382,7 @@ export class SystemjsBundle extends PipeTask {
                 let baseURL = <string>option.baseURL; // ctx.toUrl(ctx.getRootPath(), <string>option.baseURL) || '.';
                 let root = ctx.getRootPath();
                 _.each(folders, f => {
-                    let relp = url.resolve(baseURL, ctx.toUrl(root, ctx.toUrl(dist, f)));
+                    let relp = ctx.toUrl(path.join(baseURL, ctx.toUrl(root, ctx.toUrl(dist, f))));
                     let fm = path.basename(f);
                     console.log('reset css url folder name:', chalk.cyan(fm), 'relate url:', chalk.cyan(relp));
                     let reg = new RegExp(`(url\\((\\.\\.\\/)+${fm})|(url\\(\\/${fm})`, 'gi');

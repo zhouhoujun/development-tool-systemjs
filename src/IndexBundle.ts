@@ -3,6 +3,7 @@ import { task, Src, ITaskContext, IAssertDist, Pipe, ITaskInfo, TransformSource,
 import { Gulp } from 'gulp';
 import * as htmlreplace from 'gulp-html-replace';
 import { IBundlesConfig } from './config';
+import * as path  from 'path';
 // import * as url from 'url';
 
 @task({
@@ -29,9 +30,10 @@ export class IndexBundle extends PipeTask {
 
     pipes(ctx: ITaskContext, dist: IAssertDist, gulp?: Gulp): Pipe[] {
         let option = <IBundlesConfig>ctx.option;
+        console.log('index option:', option);
         let pkg = ctx.getPackage()
         let pipes = <Pipe[]>[
-            (ctx: ITaskContext) => htmlreplace({ 'js': ctx.toUrl((ctx.toStr(option.baseURL) || './', ctx.toStr(option.mainfile)) + '?bust=' + (ctx.toStr(option.bust) || pkg.version) })
+            (ctx: ITaskContext) => htmlreplace({ 'js': ctx.toUrl(path.join(ctx.toStr(option.baseURL) || './', ctx.toStr(option.mainfile))) + '?bust=' + (ctx.toStr(option.bust) || pkg.version) })
         ];
 
         if (option.indexPipes && option.indexPipes.length > 0) {
