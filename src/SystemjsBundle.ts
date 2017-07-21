@@ -50,7 +50,7 @@ export class SystemjsBundle extends PipeTask {
                             });
                     }))
                 }).then(groups => {
-                    return _.flatten(groups);
+                    return _.flatten<any>(groups);
                 });
         } else {
             return this.loadBuilder(ctx)
@@ -59,7 +59,8 @@ export class SystemjsBundle extends PipeTask {
                     console.log('start bundle all src : ', chalk.cyan(<any>src));
                     let bcfg = this.getBuildConfig(ctx);
                     if (bcfg.config) {
-                        builder.config(bcfg.config)
+                        builder.loadConfig(bcfg.config, undefined, true)
+                        // builder.config(bcfg.config)
                     }
 
                     return ctx.fileFilter(src)
@@ -144,8 +145,8 @@ export class SystemjsBundle extends PipeTask {
 
     protected loadBuilder(ctx: ITaskContext): Promise<any> {
         let option = <IBundlesConfig>ctx.option;
-        let baseURL = ctx.toUrl(ctx.getRootPath(), <string>option.baseURL) || '';
-        let jsbuilder = new Builder(baseURL, _.isArray(option.systemConfig) ? _.first(option.systemConfig) : <string>option.systemConfig);
+        // let baseURL = ctx.toUrl(ctx.getRootPath(), <string>option.baseURL) || '';
+        let jsbuilder = new Builder('./', _.isArray(option.systemConfig) ? _.first(option.systemConfig) : <string>option.systemConfig);
 
         return Promise.resolve(jsbuilder)
             .then(builder => {
@@ -272,16 +273,17 @@ export class SystemjsBundle extends PipeTask {
                 let paths: any = {};
                 let bundleDest = ctx.getDist();
                 let rootpath = <string>option.bundleBaseDir;
+                let pjtroot = ctx.getRootPath();
                 ctx.getFolders(rootpath, (f, d) => {
                     if (f !== bundleDest) {
                         let p = d + '/*';
-                        paths[p] = ctx.toUrl(ctx.env.root, path.join(rootpath, p));
+                        paths[p] = ctx.toUrl(pjtroot, path.join(rootpath, p));
                     }
                     return '';
                 });
-                // let jpk = <string>option.jspmPackages;
-                // let jp = path.basename(jpk) + '/*';
-                // paths[jp] = self.toUrl(rootpath, path.join(jpk, jp));
+                let npmpkg = ctx.toRootPath('./node_modules'); // ctx.getPackage()[''];
+                let jp = path.basename(npmpkg) + '/*';
+                paths[jp] = ctx.toUrl(pjtroot, npmpkg + '/*');
                 console.log('paths: ', paths);
                 return paths;
             },
@@ -318,7 +320,7 @@ export class SystemjsBundle extends PipeTask {
 
         option.baseURL = ctx.toStr(option.baseURL) || './';
         if (!option.bundleBaseDir && ctx.parent) {
-            option.bundleBaseDir = ctx.parent.getDist()
+            option.bundleBaseDir = ctx.parent.getDist();
         } else if (option.bundleBaseDir) {
             option.bundleBaseDir = ctx.toRootPath(ctx.toStr(option.bundleBaseDir));
         } else {
