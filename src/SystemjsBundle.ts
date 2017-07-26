@@ -187,9 +187,9 @@ export class SystemjsBundle extends PipeTask {
                     process.exit(0);
                 }
 
-                let deps = opt.dependencies ? ctx.to<string[]>(opt.dependencies) : _.keys(pkg.jspm.dependencies);
+                let deps = opt.dependencies ? ctx.to<string[]>(opt.dependencies) : _.keys(pkg.dependencies);
                 if (!deps || deps.length < 0) {
-                    console.log(chalk.red('not set bundle dependencies libs, or not setting jspm config.'));
+                    console.log(chalk.red('not set bundle dependencies libs.'));
                     process.exit(0);
                 }
                 if (opt.depsExclude) {
@@ -381,16 +381,31 @@ export class SystemjsBundle extends PipeTask {
                 let dist = ctx.getDist(this.getInfo());
                 let baseURL = <string>option.baseURL; // ctx.toUrl(ctx.getRootPath(), <string>option.baseURL) || '.';
                 let root = ctx.getRootPath();
+                let urlprefix1 = "url\\(\\'";
+                let urlprefix2 = 'url\\(\\"';
+                let urlprefix3 = 'url\\(';
+                let urlprefix4 = 'url\\(\\\\"';
+                let urlprefix5 = "url\\(\\\\'";
+                let urlpath = '\\.\\.\\/';
                 _.each(folders, f => {
                     let relp = ctx.toUrl(path.join(baseURL, ctx.toUrl(root, ctx.toUrl(dist, f))));
                     let fm = path.basename(f);
+
                     console.log('reset css url folder name:', chalk.cyan(fm), 'relate url:', chalk.cyan(relp));
-                    let reg = new RegExp(`(url\\((\\.\\.\\/)+${fm})|(url\\(\\/${fm})`, 'gi');
+                    let reg = new RegExp(`(${urlprefix3}(${urlpath})+${fm})|(${urlprefix3}\\/${fm})`, 'gi');
                     ps.push(() => replace(reg, `url(${relp}`));
-                    let reg2 = new RegExp(`(url\\(\\\\'(\\.\\.\\/)+${fm})|(url\\(\\\\'\\/${fm})`, 'gi');
+
+                    let reg2 = new RegExp(`(${urlprefix5}(${urlpath})+${fm})|(${urlprefix5}\\/${fm})`, 'gi');
                     ps.push(() => replace(reg2, `url(\\'${relp}`));
-                    let reg3 = new RegExp(`(url\\(("\\.\\.\\/)+${fm})|(url\\("\\/${fm})`, 'gi');
+
+                    let reg3 = new RegExp(`(${urlprefix2}(${urlpath})+${fm})|(${urlprefix2}\\/${fm})`, 'gi');
                     ps.push(() => replace(reg3, `url("${relp}`));
+
+                    let reg4 = new RegExp(`(${urlprefix1}(${urlpath})+${fm})|(${urlprefix1}\\/${fm})`, 'gi');
+                    ps.push(() => replace(reg4, `url('${relp}`));
+
+                    let reg5 = new RegExp(`(${urlprefix4}(${urlpath})+${fm})|(${urlprefix4}\\/${fm})`, 'gi');
+                    ps.push(() => replace(reg5, `url(\\'${relp}`));
                 });
                 this.restps = ps;
             } else {
