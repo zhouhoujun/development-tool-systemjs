@@ -405,7 +405,7 @@ export class SystemjsBundle extends PipeTask {
                     ps.push(() => replace(reg4, `url('${relp}`));
 
                     let reg5 = new RegExp(`(${urlprefix4}(${urlpath})+${fm})|(${urlprefix4}\\/${fm})`, 'gi');
-                    ps.push(() => replace(reg5, `url(\\'${relp}`));
+                    ps.push(() => replace(reg5, `url(\\"${relp}`));
                 });
                 this.restps = ps;
             } else {
