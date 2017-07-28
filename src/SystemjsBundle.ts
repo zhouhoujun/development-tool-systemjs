@@ -281,9 +281,9 @@ export class SystemjsBundle extends PipeTask {
                     }
                     return '';
                 });
-                let npmpkg = ctx.toRootPath('./node_modules'); // ctx.getPackage()[''];
-                let jp = path.basename(npmpkg) + '/*';
-                paths[jp] = ctx.toUrl(pjtroot, npmpkg + '/*');
+                // let npmpkg = ctx.toRootPath('./node_modules'); // ctx.getPackage()[''];
+                // let jp = path.basename(npmpkg) + '/*';
+                // paths[jp] = ctx.toUrl(pjtroot, npmpkg + '/*');
                 console.log('paths: ', paths);
                 return paths;
             },
