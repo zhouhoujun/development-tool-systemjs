@@ -381,31 +381,32 @@ export class SystemjsBundle extends PipeTask {
                 let dist = ctx.getDist(this.getInfo());
                 let baseURL = <string>option.baseURL; // ctx.toUrl(ctx.getRootPath(), <string>option.baseURL) || '.';
                 let root = ctx.getRootPath();
-                let urlprefix1 = "url\\(\\'";
-                let urlprefix2 = 'url\\(\\"';
-                let urlprefix3 = 'url\\(';
-                let urlprefix4 = 'url\\(\\\\"';
-                let urlprefix5 = "url\\(\\\\'";
+                let urlprefix1 = "url\\(\\'(\\/){0,1}";
+                let urlprefix2 = 'url\\(\\"(\\/){0,1}';
+                let urlprefix3 = 'url\\((\\/){0,1}';
+                let urlprefix4 = 'url\\(\\\\"(\\/){0,1}';
+                let urlprefix5 = "url\\(\\\\'(\\/){0,1}";
                 let urlpath = '\\.\\.\\/';
                 _.each(folders, f => {
                     let relp = ctx.toUrl(path.join(baseURL, ctx.toUrl(root, ctx.toUrl(dist, f))));
                     let fm = path.basename(f);
 
                     console.log('reset css url folder name:', chalk.cyan(fm), 'relate url:', chalk.cyan(relp));
-                    let reg = new RegExp(`(${urlprefix3}(${urlpath})+${fm})|(${urlprefix3}\\/${fm})`, 'gi');
-                    ps.push(() => replace(reg, `url(${relp}`));
+                    let reg1 = new RegExp(`(${urlprefix1}(${urlpath})+${fm})|(${urlprefix1}\\/${fm})`, 'gi');
+                    ps.push(() => replace(reg1, `url('${relp}`));
 
-                    let reg2 = new RegExp(`(${urlprefix5}(${urlpath})+${fm})|(${urlprefix5}\\/${fm})`, 'gi');
-                    ps.push(() => replace(reg2, `url(\\'${relp}`));
+                    let reg2 = new RegExp(`(${urlprefix2}(${urlpath})+${fm})|(${urlprefix2}\\/${fm})`, 'gi');
+                    ps.push(() => replace(reg2, `url("${relp}`));
 
-                    let reg3 = new RegExp(`(${urlprefix2}(${urlpath})+${fm})|(${urlprefix2}\\/${fm})`, 'gi');
-                    ps.push(() => replace(reg3, `url("${relp}`));
+                    let reg3 = new RegExp(`(${urlprefix3}(${urlpath})+${fm})|(${urlprefix3}\\/${fm})`, 'gi');
+                    ps.push(() => replace(reg3, `url(${relp}`));
 
-                    let reg4 = new RegExp(`(${urlprefix1}(${urlpath})+${fm})|(${urlprefix1}\\/${fm})`, 'gi');
-                    ps.push(() => replace(reg4, `url('${relp}`));
+                    let reg4 = new RegExp(`(${urlprefix4}(${urlpath})+${fm})|(${urlprefix4}\\/${fm})`, 'gi');
+                    ps.push(() => replace(reg4, `url(\\"${relp}`));
 
-                    let reg5 = new RegExp(`(${urlprefix4}(${urlpath})+${fm})|(${urlprefix4}\\/${fm})`, 'gi');
-                    ps.push(() => replace(reg5, `url(\\"${relp}`));
+                    let reg5 = new RegExp(`(${urlprefix5}(${urlpath})+${fm})|(${urlprefix5}\\/${fm})`, 'gi');
+                    ps.push(() => replace(reg5, `url(\\'${relp}`));
+
                 });
                 this.restps = ps;
             } else {
