@@ -1,6 +1,6 @@
 {
   "name": "development-tool-systemjs",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "jspm bundle builder tools, group bundle. also work with angular1 or angular2",
   "main": "./lib/index.js",
   "typings": "./lib/index",
