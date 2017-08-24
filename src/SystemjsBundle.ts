@@ -120,7 +120,7 @@ export class SystemjsBundle extends PipeTask {
         return pipes;
     }
 
-    protected working(source: ITransform, ctx: ITaskContext, option: IAssertDist, gulp: Gulp, pipes?: Pipe[], output?: OutputPipe[]) {
+    protected working(source: ITransform, ctx: ITaskContext, option: IAssertDist, gulp: Gulp, pipes?: Pipe[], output?: OutputPipe[]): Promise<any> {
         let bundle = <IBundleMap>source['bundle'];
         return super.working(source, ctx, option, gulp, pipes, output)
             .then(() => {
@@ -664,7 +664,7 @@ ${this.manifestSplit}
             }
 
 
-            let maps = option.bundleMaps || {
+            let maps: any = option.bundleMaps || {
                 css: '',
                 json: '',
                 text: ''
